@@ -50,12 +50,28 @@ with mp_kezek.Hands(max_num_hands=2, min_detection_confidence=0.7) as kezek:
                 sarkok.append(pixelbe(mutato, szelesseg, magassag))
 
                 # Csak akkor rajzolunk, ha mindkét kéz megvan (2 kéz × 2 pont)
+        
         if len(sarkok) == 4:
             pontok = np.array(sarkok, dtype=np.int32)
-            burok = cv2.convexHull(pontok)   # sorba rendezi a sarkokat, hogy ne keresztezzék egymást a vonalak
-            cv2.polylines(kep, [burok], True, NEGYSZOG_SZIN, 3)   # True = zárt alakzat
+            burok = cv2.convexHull(pontok)   # sorba rendezi a sarkokat
 
+            # 1. Fekete maszk: ugyanakkora, mint a kép, de csak 1 színcsatornával
+            maszk = np.zeros((magassag, szelesseg), dtype=np.uint8)
+
+            # 2. A négyszög belsejét kifestjük fehérre → ez lesz a "bent"
+            cv2.fillPoly(maszk, [burok], 255)
+
+            # 3. Az egész képből elkészítjük a színeffektes változatot
+            effekt = cv2.applyColorMap(kep, cv2.COLORMAP_PLASMA)
+
+            # 4. Csak ott cseréljük le a pixeleket, ahol a maszk fehér
+            kep[maszk == 255] = effekt[maszk == 255]
+            cv2.imshow("Maszk", maszk)
+
+            # 5. A keretet a végén rajzoljuk, hogy az effekt ne fesse felül
+            cv2.polylines(kep, [burok], True, NEGYSZOG_SZIN, 3)
         cv2.imshow("Portal", kep)
+        
         if cv2.waitKey(1) & 0xFF == ord("q"):   # q gombbal kilépés
             break
 
