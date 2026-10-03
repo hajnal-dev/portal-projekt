@@ -28,6 +28,13 @@ def to_pixel(landmark, width, height):
     return (int(landmark.x * width), int(landmark.y * height))
 
 
+def filter_color(colormap):
+    """Pick a representative color of a colormap as a BGR tuple."""
+    sample = np.array([[200]], dtype=np.uint8)   # a 1x1 gray "image" with value 200
+    b, g, r = cv2.applyColorMap(sample, colormap)[0, 0]
+    return (int(b), int(g), int(r))
+
+
 class PortalApp:
     """Webcam portal effect: draws a frame between two hands with a color filter inside."""
 
@@ -115,7 +122,8 @@ class PortalApp:
                     self.particles.update(result.multi_hand_landmarks)
                 else:
                      self.particles.scatter()
-                self.particles.draw(frame)
+                _, colormap = FILTERS[self.current_filter]
+                self.particles.draw(frame, filter_color(colormap))
 
                 cv2.imshow("Portal", frame)
                 if cv2.waitKey(1) & 0xFF == ord("q"):

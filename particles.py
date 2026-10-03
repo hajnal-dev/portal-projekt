@@ -80,7 +80,7 @@ class ParticleCloud:
         self.positions += self.velocities
 
 
-    def draw(self, frame):
+    def draw(self, frame, color=PARTICLE_COLOR):
         """Draw every particle onto the frame as a small filled circle."""
         height, width, _ = frame.shape
 
@@ -88,4 +88,4 @@ class ParticleCloud:
         pixels = (self.positions * [width, height]).astype(int)
 
         for x, y in pixels:
-            cv2.circle(frame, (x, y), PARTICLE_RADIUS, PARTICLE_COLOR, -1)
+            cv2.circle(frame, (x, y), PARTICLE_RADIUS, color, -1)
