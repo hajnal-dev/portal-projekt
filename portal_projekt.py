@@ -6,11 +6,13 @@ from particles import ParticleCloud
 mp_hands = mp.solutions.hands          # hand detection module
 mp_draw = mp.solutions.drawing_utils   # helper for drawing landmarks
 
+# - - - Constants - - -
 THUMB_TIP = 4         # index of the thumb tip among the 21 landmarks
 INDEX_TIP = 8         # index of the index finger tip
 TOUCH_THRESHOLD = 0.05  # below this distance = touch (normalized units)
 FRAME_COLOR = (0, 255, 0)  # BGR: green
 WHITE = 255           # in the mask: "inside"
+SHOW_SKELETON = False  # set to True to see the hand landmarks (useful for debugging)
 
 # Available filters: (name, OpenCV colormap)
 FILTERS = [
@@ -36,7 +38,7 @@ class PortalApp:
         # State that persists from frame to frame
         self.current_filter = 0
         self.was_touching = False
-        self.particles = ParticleCloud()
+        self.particles = ParticleCloud(1000)
 
     def _is_touching(self, thumb, index):
         """Return True if the thumb tip and index finger tip are close enough."""
@@ -51,7 +53,8 @@ class PortalApp:
 
         if result.multi_hand_landmarks:
             for hand in result.multi_hand_landmarks:
-                mp_draw.draw_landmarks(frame, hand, mp_hands.HAND_CONNECTIONS)
+                if SHOW_SKELETON:
+                    mp_draw.draw_landmarks(frame, hand, mp_hands.HAND_CONNECTIONS)
 
                 thumb = hand.landmark[THUMB_TIP]
                 index = hand.landmark[INDEX_TIP]
@@ -109,7 +112,7 @@ class PortalApp:
                 self._update_filter(touching)
                 self._draw_portal(frame, corners)
                 if result.multi_hand_landmarks:
-                    self.particles.update(result.multi_hand_landmarks[0])
+                    self.particles.update(result.multi_hand_landmarks)
                 self.particles.draw(frame)
 
                 cv2.imshow("Portal", frame)
