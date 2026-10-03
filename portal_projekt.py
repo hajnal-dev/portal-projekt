@@ -108,6 +108,8 @@ class PortalApp:
                 corners, touching = self._process_hands(frame, result)   # <- 4.
                 self._update_filter(touching)
                 self._draw_portal(frame, corners)
+                if result.multi_hand_landmarks:
+                    self.particles.update(result.multi_hand_landmarks[0])
                 self.particles.draw(frame)
 
                 cv2.imshow("Portal", frame)
