@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import numpy as np
+from particles import ParticleCloud
 
 mp_hands = mp.solutions.hands          # hand detection module
 mp_draw = mp.solutions.drawing_utils   # helper for drawing landmarks
@@ -35,6 +36,7 @@ class PortalApp:
         # State that persists from frame to frame
         self.current_filter = 0
         self.was_touching = False
+        self.particles = ParticleCloud()
 
     def _is_touching(self, thumb, index):
         """Return True if the thumb tip and index finger tip are close enough."""
@@ -106,6 +108,7 @@ class PortalApp:
                 corners, touching = self._process_hands(frame, result)   # <- 4.
                 self._update_filter(touching)
                 self._draw_portal(frame, corners)
+                self.particles.draw(frame)
 
                 cv2.imshow("Portal", frame)
                 if cv2.waitKey(1) & 0xFF == ord("q"):
