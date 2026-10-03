@@ -9,7 +9,7 @@ mp_draw = mp.solutions.drawing_utils   # helper for drawing landmarks
 # - - - Constants - - -
 THUMB_TIP = 4         # index of the thumb tip among the 21 landmarks
 INDEX_TIP = 8         # index of the index finger tip
-TOUCH_THRESHOLD = 0.05  # below this distance = touch (normalized units)
+TOUCH_THRESHOLD = 0.06  # below this distance = touch (normalized units)
 FRAME_COLOR = (0, 255, 0)  # BGR: green
 WHITE = 255           # in the mask: "inside"
 SHOW_SKELETON = False  # set to True to see the hand landmarks (useful for debugging)
@@ -113,6 +113,8 @@ class PortalApp:
                 self._draw_portal(frame, corners)
                 if result.multi_hand_landmarks:
                     self.particles.update(result.multi_hand_landmarks)
+                else:
+                     self.particles.scatter()
                 self.particles.draw(frame)
 
                 cv2.imshow("Portal", frame)
