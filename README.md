@@ -10,6 +10,7 @@ Built with OpenCV and MediaPipe Hands.
 - Pinch (thumb + index finger) to switch between filters
 - Particle cloud that takes the shape of your hands and drifts away when they leave
 - On-screen button to toggle rainbow / green particles (point at it with your index finger)
+- ASCII art filter: the image inside the portal is redrawn with characters (optionally in color)
 
 ## Run
 

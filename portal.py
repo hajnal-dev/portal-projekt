@@ -6,6 +6,7 @@ import cv2
 import mediapipe as mp
 import numpy as np
 
+from ascii_filter import to_ascii
 from particles import ParticleCloud
 
 mp_hands = mp.solutions.hands  # hand detection module
@@ -30,12 +31,13 @@ SCANLINES = False  # darken every few rows, like an old CRT monitor
 SCANLINE_GAP = 3  # every 3rd row is darkened
 SCANLINE_DARKNESS = 0.6  # darkened rows keep 60% of their brightness
 
-# Available filters: (name, OpenCV colormap)
+# Available filters: (name, OpenCV colormap); None = not a colormap, ASCII art instead
 FILTERS = [
     ("CYBER_NEON", cv2.COLORMAP_PLASMA),
     ("LAVA", cv2.COLORMAP_HOT),
     ("OCEAN", cv2.COLORMAP_OCEAN),
     ("RAINBOW", cv2.COLORMAP_JET),
+    ("ASCII", None),
 ]
 
 
@@ -117,7 +119,10 @@ class PortalApp:
         mask = np.zeros((height, width), dtype=np.uint8)
         cv2.fillPoly(mask, [hull], WHITE)
 
-        effect = cv2.applyColorMap(frame, colormap)
+        if colormap is None:
+            effect = to_ascii(frame)
+        else:
+            effect = cv2.applyColorMap(frame, colormap)
         frame[mask == WHITE] = effect[mask == WHITE]
 
         cv2.polylines(frame, [hull], True, FRAME_COLOR, FRAME_THICKNESS)
